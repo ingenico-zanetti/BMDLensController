@@ -162,7 +162,7 @@ AT+Z=2000;+I=2000;+F=2000
 
 OK
 
-will must every servo, simultaneously, to reach the ADC value of 2000 ; each servo runs at each own pace, so the movement will not complete at the same time.
+will move every servo, simultaneously, to reach the ADC value of 2000 ; each servo runs at each own pace, so the movements will not complete at the same time.
 
 
 Examples of relative ADC move:
@@ -175,12 +175,12 @@ will change the position of the focus to reach current ADC + 20
 
 AT+F=+1000;+Z=+60,1
 
-will massively change focus at the current speeed while also changing the zoom, at the slowest speed possible by a small value.
+will massively change focus at the current speeed while also changing the zoom, at the slowest speed possible, by a small value.
 
-For absolute as well as relative moves, the boundaries are check: no move is allowed to end outside of the known setpoints for this servo
+For absolute as well as relative moves, the boundaries are check: no move is allowed to end outside of the known setpoints for this servo.
 
 
-The setpoint syntax has a dot '.' in the value (so 4 shoudl be written 4. else it will be considered as an absolute ADC setting)
+The setpoint syntax has a dot '.' in the value (so 4 should be written 4. else it will be considered as an absolute ADC setting)
 Examples of "setpoint" syntax
 
 AT+I=5.6
@@ -243,13 +243,13 @@ IRIS: setting 160 with current adcValue 1796 instead of 1571 => 0
 
 OK
 
-Notice setpoint are internal stored as 10 times the value: 5.6 is internally 56 ; the value is an unsigned 16-bit value, so the range is 0.0 to 6553.5 inclusive.
+Notice setpoint are internally stored as 10 times the value: 5.6 is internally 56 ; the value is an unsigned 16-bit value, so the range is 0.0 to 6553.5 inclusive.
 This should be enough for any lens having realistic settings ; if you have a focal length beyond 6.5535 meters, this might be an issue.
-For focus, the provided setpoints in the FW use the following convention:
+For focus, the provided setpoints in the FW use the following conventions:
 - setpoint are in meters (they often are written in both feet and meters on the lens)
 - 999.0 is infinity (spot-on in the middle of the symbol)
 - 999.9 is beyond infinity (the maximum reachable optical/mechanical position)
-This has the poor side effect of rendering interpolated setpoints useless beyond the last actual setpoint (10m on the lenses I had access to) ; focus is meant to be driven is relative moves anyway (timed or ADC) or absolute values that have been already stored to a later use.
+This has the poor side effect of rendering interpolated setpoints useless beyond the last actual setpoint (10m on the lenses I had access to) ; focus is meant to be driven is relative moves anyway (timed or ADC) or absolute values that have been already stored for a later use.
 Once your are satisfied with your new setting(s), use AT&W to have them stored in Flash.
 
 Each servo has 3 settings:
@@ -258,7 +258,7 @@ Each servo has 3 settings:
 - minSpeed
 
 We have already seen minSpeed, but never acutally explained how it works.
-"Speed" is obtained through driving the motor with a PWM signal ; the PWM goes from 1 over 15 (slowest possible speed) to 15 over 15 (full drive, maximum speed). Each servo has its own current-limiting power supply, a different motor, some gearbox / reduction and try to move more or less easy/smooth mechanical parts inside the lens. This has the side effect that with very low PWM setting, the drive mechanism can get stucked or not be smooth. To prevent this from happening, you can use minSpeed to forbid using too small a value ; using 15 will prevent any move to occur at less than the max speed.
+"Speed" is obtained through driving the motor with a PWM signal ; the PWM goes from 1 over 15 (slowest possible speed) to 15 over 15 (full drive, maximum speed). Each servo has its own current-limiting power supply, a different motor, some gearbox / reduction and has to move more or less easy/smooth mechanical parts inside the lens. This has the side effect that with very low PWM setting, the drive mechanism can get stucked or not be smooth. To prevent this from happening, you can use minSpeed to forbid using too small a value ; using 15 will prevent any move to occur at less than the max speed.
 The setting can be altered using the AT+x=M,PWM syntax:
 
 AT+Z=M,3
@@ -269,9 +269,8 @@ will forbid Zoom servo to get lower than 3/15 PWM setting.
 
 "timeoutScale" is used as a protection mechanism. At each move request, a timeout is computed. For the timed moves, this is the provided time. For other move this boils down to delta ADC divided by speed.
 When you ask for a new position, the FW will use the difference between the current ADC value and the ADC value to reach (apart from timed move, all moves are actually programmed as ADC value to reach).
-This difference in ADC steps is multiplied the provided timeoutScale and divided by the PWM setting applied at the start of the move (between 1 and 15, depending on the speed setting and the gap between the current position and the position to reach). The timeout value is in millisecond. Provided values range from 32 for iris to 100 for zoom. This is tradeoff: too low, the servo might stop before reaching the requested position, too high the servo might be "buzzing" for a while after reaching the requested position. Examples: a 1000-ADC step move with a 100 timeoutScale at full speed will have (1000 * 100) / 15 = 6666ms to complete ; a 1000-ADC step move with 100 as timeoutScale and the lowest speed will have (100*1000) / 1 = 100s to complete.
-This lead us to the last setting: pwmScale.
-This parameter is used to mimic the analog behavior in the original servo drive board: the closer to the target point we are, the slower we go (else we might overshoot and oscillate around the desired point).
+This difference in ADC steps is multiplied by the provided timeoutScale and divided by the PWM setting applied at the start of the move (between 1 and 15, depending on the speed setting and the gap between the current position and the position to reach). The timeout value is in millisecond. Provided values range from 32 for iris to 100 for zoom. This is tradeoff: too low, the servo might stop before reaching the requested position, too high the servo might be "buzzing" for a while after reaching the requested position. Examples: a 1000-ADC step move with a 100 timeoutScale at full speed will have (1000 * 100) / 15 = 6666ms to complete ; a 1000-ADC step move with 100 as timeoutScale and the lowest speed will have (100*1000) / 1 = 100s to complete.
+This pwmScale parameter is used to mimic the analog behavior of the original servo drive board: the closer to the target point we are, the slower we go (else we might overshoot and oscillate around the desired point).
 Each time the FW "runs" a servo (every milliseconds) it compute the difference between the current ADC value and the target ADC value, this difference is then divided by pwmScale to get a PWM setting to apply (from 0 to 15).
 When 0 is reached, the servo  is stopped (actually, the motor isn't driven anymore). Too big a value will prevent the requested setting to be reached (because the PWM setting will start dropping to 0 far away from the desired position) ; too low a value will trigger oscillation around the requested setting (because of inertia, if the requested value is reached at near full-speed, the servo will go beyond the desired point). Values between 4 and 6 do a good job. They are different for each servo because speed, inertia and friction are all different for each servo.
 
@@ -283,7 +282,7 @@ OK
 
 Changing the pwmScale is done through:
 
-at+z=T,4
+at+z=P,4
 
 OK
 
