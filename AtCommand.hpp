@@ -4,9 +4,11 @@
 #include <cstdint>
 #include <Arduino.h>
 #include <vector>
-#include "FirstLevelCommand.hpp"
 
 #define MAX_COMMAND_SIZE (200)
+#define FIRST_LEVEL_COMMANDS (128)
+
+typedef bool (*FirstLevelCommand)(const char *szString, int length);
 
 class AtCommandAnalyzer {
   private:
@@ -15,7 +17,7 @@ class AtCommandAnalyzer {
   char *wPtr;
   uint32_t maxSize;
   uint32_t currentSize;
-  std::vector <FirstLevelCommand*> firstLevelCommands;
+  FirstLevelCommand firstLevelCommands[FIRST_LEVEL_COMMANDS];
 
   public:
   AtCommandAnalyzer(void);
@@ -25,8 +27,7 @@ class AtCommandAnalyzer {
   void checkAndStrip(void);
   void addChar(char car);
   void analyze(char *szString);
-  void addCallback(char c, bool (*f)(const char *, int));
-
+  void addCallback(char c, FirstLevelCommand command);
 };
 
 

@@ -3,7 +3,7 @@
 #include "Servo.hpp"
 #include "Lens.hpp"
 
-static const char FW_VERSION[] = "BMD Lens Controller v1.0.0, built on " __DATE__ " at " __TIME__;
+static const char FW_VERSION[] = "BMD Lens Controller v1.0.1, built on " __DATE__ " at " __TIME__;
 
 bool handleATI(const char *szString, int length) {
   bool raiseError = false;

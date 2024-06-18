@@ -1,7 +1,17 @@
 #include "AtCommand.hpp"
 #include <ctype.h>
+#include <string.h>
+
+bool errorCallback(const char *szString, int length){
+  (void)szString;
+  (void)length;
+  return(true);
+}
 
 AtCommandAnalyzer::AtCommandAnalyzer(void){
+  for(int i = 0 ; i < FIRST_LEVEL_COMMANDS ; i++){
+    firstLevelCommands[i] = errorCallback;
+  }
   init(MAX_COMMAND_SIZE);
 }
 
@@ -18,10 +28,8 @@ char AtCommandAnalyzer::read(void){
 }
 
 void AtCommandAnalyzer::init(uint32_t size){
-  wPtr = data + size;
-  rPtr = wPtr;
   maxSize = size;
-  currentSize = 0;
+  reInit();
 }
 
 void AtCommandAnalyzer::reInit(void){
@@ -51,7 +59,7 @@ void AtCommandAnalyzer::checkAndStrip(void){
 }
 
 void AtCommandAnalyzer::addChar(char car){
-  *(--wPtr) = toupper(car);
+  *(--wPtr) = toupper(car) & 0x7F;
   if(data == wPtr){
     wPtr = data + maxSize; // Wrap around
   }
@@ -84,18 +92,7 @@ void AtCommandAnalyzer::analyze(char *szString){
       length = (int)(next - start);
     }
     if(length > 0){
-      bool found = false;
-      std::vector<FirstLevelCommand*>::iterator it;
-      for(it = firstLevelCommands.begin() ; it != firstLevelCommands.end() ; it++){
-        if((*it)->getFirstChar() == first){
-          error = (*it)->handleCommand(start, length);
-          found = true;
-          break;
-        }
-      }
-      if(!found){
-        error = true;
-      }
+      error = firstLevelCommands[(int)first](start, length);
     }
     if(error || endReached){
       break;
@@ -109,6 +106,9 @@ void AtCommandAnalyzer::analyze(char *szString){
   }
 }
 
-void AtCommandAnalyzer::addCallback(char c, bool (*f)(const char *, int)){
-  firstLevelCommands.push_back(new FirstLevelCommand(c, f));
+void AtCommandAnalyzer::addCallback(char c, FirstLevelCommand command){
+  int index = toupper(c);
+  if((' ' < index) && (index < FIRST_LEVEL_COMMANDS)){
+    firstLevelCommands[index] = command;
+  }
 }

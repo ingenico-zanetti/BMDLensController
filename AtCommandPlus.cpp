@@ -14,6 +14,7 @@ static int countComas(const char *szString, int length){
 }
 
 typedef bool (*plusSubFunction)(Servo *servo, const char c, const char *szString, int comas);
+static const char *useATW =  "(use AT&W to make the setting persistent)";
 
 static bool plusUsage(Servo *servo, const char c, const char *szString, int comas){
   (void)servo;
@@ -71,7 +72,7 @@ static bool plusRead(Servo *servo, const char c, const char *szString, int comas
  * Programming syntax for parameters
  * AT+X=Y,ddd
  * Examples:
- * AT+I=P,2     set the pwmScale to 2 for iris for setting 5.6 to the current adcValue for iris
+ * AT+I=P,2     set the pwmScale to 2 for iris
  * AT+I=M,4     set the minimum speed to 4 (over 15) for iris
  * AT+I=T,64    set the timeout factor to 64 for iris
  *
@@ -194,13 +195,13 @@ static bool plusWrite(Servo *servo, const char c, const char *szString, int coma
         nptr = lastComa + 1;
         if('\0' == lastComa[1]){
           raiseError = servo->setSetPoint(setPoint.setting, servo->getAdcValue());
-          Serial.printf("%s: setting %d with current adcValue %d instead of %d => %d" "\n", servo->getName(), setPoint.setting, servo->getAdcValue(), setPoint.adcValue, raiseError);
+          Serial.printf("%s: setting %d with current adcValue %d instead of %d => %d %s" "\n", servo->getName(), setPoint.setting, servo->getAdcValue(), setPoint.adcValue, raiseError, useATW);
         }else{
           nptr = lastComa + 1;
           float thirdValue = strtof(nptr, &end);
           if(end != nptr){
             raiseError = servo->setSetPoint(setPoint.setting, (unsigned short)thirdValue);
-            Serial.printf("%s: setting %d with provided adcValue %d instead of %d => %d" "\n", servo->getName(), setPoint.setting, (unsigned short)thirdValue, setPoint.adcValue, raiseError);
+            Serial.printf("%s: setting %d with provided adcValue %d instead of %d => %d %s" "\n", servo->getName(), setPoint.setting, (unsigned short)thirdValue, setPoint.adcValue, raiseError, useATW);
           }else{
             raiseError = true;
           }
@@ -261,22 +262,7 @@ bool handlePlus(const char *szString, int length) {
     }
   }
   if(sub){
-    switch(axis){
-      case 'Z':
-        // Zoom
-        servo = &zoomServo;
-      break;
-      case 'I':
-        // Iris
-        servo = &irisServo;
-      break;
-      case 'F':
-        // Focus
-        servo = &focusServo;
-      break;
-      default:
-      break;
-    }
+    servo = getServo(axis);
     if(servo){
       raiseError = sub(servo, axis, szString, comas);
     }
