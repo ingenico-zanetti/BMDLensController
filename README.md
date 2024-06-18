@@ -170,7 +170,7 @@ at+z=m,4
 OK
 ```
 
-Now the minimum speed will not be lower than 4/15, whatever requested.
+Now the minimum speed will not be lower than 4/16, whatever requested.
 
 Examples of absolute ADC syntax:
 
@@ -316,7 +316,7 @@ will forbid Zoom servo to get lower than 3/16 PWM setting.
 
 "timeoutScale" is used as a protection mechanism. At each move request, a timeout is computed. For the timed moves, this is the provided time. For other move this boils down to delta ADC divided by speed.
 When you ask for a new position, the FW will use the difference between the current ADC value and the ADC value to reach (apart from timed move, all moves are actually programmed as ADC value to reach).
-This difference in ADC steps is multiplied by the provided timeoutScale and divided by the PWM setting applied at the start of the move (between 1 and 15, depending on the speed setting and the gap between the current position and the position to reach). The timeout value is in millisecond. Provided values range from 32 for iris to 100 for zoom. This is tradeoff: too low, the servo might stop before reaching the requested position, too high the servo might be "buzzing" for a while after reaching the requested position. Examples: a 1000-ADC step move with a 100 timeoutScale at full speed will have (1000 * 100) / 15 = 6666ms to complete ; a 1000-ADC step move with 100 as timeoutScale and the lowest speed will have (100*1000) / 1 = 100s to complete.
+This difference in ADC steps is multiplied by the provided timeoutScale and divided by the PWM setting applied at the start of the move (between 1 and 16, depending on the speed setting and the gap between the current position and the position to reach). The timeout value is in millisecond. Provided values range from 32 for iris to 100 for zoom. This is tradeoff: too low, the servo might stop before reaching the requested position, too high the servo might be "buzzing" for a while after reaching the requested position. Examples: a 1000-ADC step move with a 100 timeoutScale at full speed will have (1000 * 100) / 16 = 6250ms to complete ; a 1000-ADC step move with 100 as timeoutScale and the lowest speed will have (100*1000) / 1 = 100s to complete.
 This pwmScale parameter is used to mimic the analog behavior of the original servo drive board: the closer to the target point we are, the slower we go (else we might overshoot and oscillate around the desired point).
 Each time the FW "runs" a servo (every milliseconds) it compute the difference between the current ADC value and the target ADC value, this difference is then divided by pwmScale to get a PWM setting to apply (from 1 to 16).
 When 0 is reached, the servo  is stopped (actually, the motor isn't driven anymore). Too big a value will prevent the requested setting to be reached (because the PWM setting will start dropping to 0 far away from the desired position) ; too low a value will trigger oscillations around the requested setting (because of inertia, if the requested value is reached at near full-speed, the servo will go beyond the desired point). Values between 4 and 6 do a good job. They are different for each servo because speed, inertia and friction are all different for each servo.
