@@ -35,57 +35,31 @@ ATI2:
 
 ati2
 ZOOM:
-
 setPoints[ 0]={  9.0mm, 2640 steps}
-
 setPoints[ 1]={ 20.0mm, 2146 steps}
-
 setPoints[ 2]={ 40.0mm, 1853 steps}
-
 setPoints[ 3]={ 80.0mm, 1584 steps}
-
 setPoints[ 4]={153.0mm, 1320 steps}
-
 parameters={.pwmScale=  4, .timeoutScale=100, .minSpeed=  1}
-
 FOCUS:
-
 setPoints[ 0]={   .9 m, 1323 steps}
-
 setPoints[ 1]={  1.2 m, 1721 steps}
-
 setPoints[ 2]={  1.5 m, 1961 steps}
-
 setPoints[ 3]={  2.0 m, 2190 steps}
-
 setPoints[ 4]={  3.0 m, 2414 steps}
-
 setPoints[ 5]={  5.0 m, 2614 steps}
-
 setPoints[ 6]={ 10.0 m, 2770 steps}
-
 setPoints[ 7]={999.0 m, 2945 steps}
-
 setPoints[ 8]={999.9 m, 2984 steps}
-
 parameters={.pwmScale=  6, .timeoutScale= 64, .minSpeed=  4}
-
 IRIS:
-
 setPoints[ 0]={  1.9  , 3040 steps}
-
 setPoints[ 1]={  2.8  , 2767 steps}
-
 setPoints[ 2]={  4.0  , 2516 steps}
-
 setPoints[ 3]={  5.6  , 2225 steps}
-
 setPoints[ 4]={  8.0  , 1993 steps}
-
 setPoints[ 5]={ 11.0  , 1786 steps}
-
 setPoints[ 6]={ 16.0  , 1571 steps}
-
 parameters={.pwmScale=  4, .timeoutScale= 32, .minSpeed=  2}
 
 OK
