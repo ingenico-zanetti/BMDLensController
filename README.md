@@ -158,7 +158,7 @@ AT+Z=+100000m,1
 OK
 ```
 
-will move the Zoom servo in the forward direction for 100 seconds, at the slowest possible speed
+will move the Zoom servo in the forward direction for 100 seconds, at the slowest possible speed.
 Speeds range from 1 (slowest) to 15 (fastest). Each servo runs at maximum speed until setup otherwise.
 However, the "minSpeed" setting for each servo limits the slowest speed actually allowed (to avoid getting stuck).
 
