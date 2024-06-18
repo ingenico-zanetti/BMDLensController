@@ -2,7 +2,8 @@
 
 // #define __T14X5POINT5DA_D24__
 // #define __S20X6POINT4BMD_DSD__
-#define __A17X9BMD_D24__
+// #define __A17X9BMD_D24__
+#define __S19X6POINT5BMD_D4M__
 
 #if defined(__S20X6POINT4BMD_DSD__)
 
@@ -181,6 +182,69 @@ const ServoSettings focusSettings = {
     { .setting =  100, .adcValue = 2770},
     { .setting = 9990, .adcValue = 2912}, // infinity
     { .setting = 9999, .adcValue = 2963}, // and beyond
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 6,
+    .timeoutScale = 64,
+    .minSpeed = 4,
+    .rfu = 0
+  }
+};
+
+#elif defined(__S19X6POINT5BMD_D4M__)
+
+const char *szLensName = "FUJINON AT2 S19x6.5BMD-D4M";
+
+const ServoSettings zoomSettings = {
+  .setPoints = {
+    { .setting =   65, .adcValue = 3030 },
+    { .setting =  150, .adcValue = 2560 },
+    { .setting =  300, .adcValue = 2280 },
+    { .setting =  600, .adcValue = 2010 },
+    { .setting = 1230, .adcValue = 1725 },
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 4,
+    .timeoutScale = 100,
+    .minSpeed = 1,
+    .rfu = 0
+  }
+};
+
+
+const ServoSettings irisSettings = {
+  .setPoints = {
+    { .setting =  14, .adcValue = 2985},
+    { .setting =  20, .adcValue = 2750},
+    { .setting =  28, .adcValue = 2490},
+    { .setting =  40, .adcValue = 2265},
+    { .setting =  56, .adcValue = 2070},
+    { .setting =  80, .adcValue = 1872},
+    { .setting = 110, .adcValue = 1665},
+    { .setting = 160, .adcValue = 1438},
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 10,
+    .timeoutScale = 32,
+    .minSpeed = 4,
+    .rfu = 0
+  }
+};
+
+const ServoSettings focusSettings = {
+  .setPoints = {
+    { .setting =    9, .adcValue = 1293},
+    { .setting =   12, .adcValue = 1666},
+    { .setting =   15, .adcValue = 1905},
+    { .setting =   20, .adcValue = 2140},
+    { .setting =   30, .adcValue = 2375},
+    { .setting =   50, .adcValue = 2566},
+    { .setting =  100, .adcValue = 2708},
+    { .setting = 9990, .adcValue = 2852}, // infinity
+    { .setting = 9999, .adcValue = 2880}, // and beyond
     { 0, 0}
   },
   .parameters = {
