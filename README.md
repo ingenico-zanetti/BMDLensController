@@ -33,6 +33,7 @@ OK
 ATI2:
 	get the setpoints for all servos
 
+```text
 ati2
 ZOOM:
 setPoints[ 0]={  9.0mm, 2640 steps}
@@ -63,6 +64,7 @@ setPoints[ 6]={ 16.0  , 1571 steps}
 parameters={.pwmScale=  4, .timeoutScale= 32, .minSpeed=  2}
 
 OK
+```
 
 The lens selected at build time will set the name and setpoints:
 - the name has no real effect
