@@ -110,7 +110,7 @@ static bool plusWrite(Servo *servo, const char c, const char *szString, int coma
       if(getParameterValueFromString(szString + 4, &value)){
         raiseError = true;
       }else{
-        servo->setPwmScale(value);
+        raiseError = servo->setPwmScale(value);
       }
     }else if('T' == first){
       // timeoutScale parameter
@@ -118,7 +118,7 @@ static bool plusWrite(Servo *servo, const char c, const char *szString, int coma
       if(getParameterValueFromString(szString + 4, &value)){
         raiseError = true;
       }else{
-        servo->setTimeoutScale(value);
+        raiseError = servo->setTimeoutScale(value);
       }
     }else if('M' == first){
       // minSpeed parameter
@@ -126,7 +126,7 @@ static bool plusWrite(Servo *servo, const char c, const char *szString, int coma
       if(getParameterValueFromString(szString + 4, &value)){
         raiseError = true;
       }else{
-        servo->setPwmRatioMin(value);
+        raiseError = (servo->setPwmRatioMin(value) != value);
       }
     }else{
       int offset = 3; // skip +X=
