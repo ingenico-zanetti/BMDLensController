@@ -4,7 +4,8 @@
 #include "SlidingWindow.hpp"
 #include "ServoAndLens.hpp"
 
-#define PWM_RATIO_MAX (15) // MUST be 2^n-1 !!!
+#define PWM_RATIO_MAX (16) // MUST be 2^n !!!
+#define PWM_RATIO_MASK (PWM_RATIO_MAX - 1)
 
 class Servo {
   private:
@@ -33,6 +34,7 @@ class Servo {
     unsigned short selfTestForwardResult;
     unsigned short selfTestBackwardResult;
 
+    void runPWM(void);
     unsigned int updatePWMRatio(void);
     int getSetPointIndex(unsigned short setting);
     int getSetPointPreviousIndex(unsigned short setting);
@@ -86,8 +88,8 @@ class Servo {
 
     unsigned int setPwmRatioMax(unsigned char max);
     unsigned int setPwmRatioMin(unsigned char min);
-    void setPwmScale(unsigned char scale);
-    void setTimeoutScale(unsigned char scale);
+    bool setPwmScale(unsigned char scale);
+    bool setTimeoutScale(unsigned char scale);
     unsigned char getPwmRatioMin(void){ return pwmRatioMin;};
     unsigned char getPwmScale(void) { return pwmScale;};
     unsigned char getTimeoutScale(void) { return timeoutScale;};

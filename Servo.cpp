@@ -203,8 +203,10 @@ bool Servo::setTimeMs(int t){
   bool raiseError = true;
   if(t > 0){
     mode = MODE_TIME;
-    remainingTimeMs = t;
+    remainingTimeMs = t + 1;
     pwmRatio = pwmRatioMax;
+    pwmCounter = 0;
+    timeout = 0;
     driving = true;
     // Serial.printf("%s(%d): trigger %sward motion for %d loop with pwmRatio %d" "\n", __func__, t, forward ? "for" : "back", remainingTimeMs, pwmRatio);
     raiseError = false;
@@ -278,7 +280,7 @@ bool Servo::setTargetAdcValue(int value){
   // Serial.printf("%s(%d)" "\n", __func__, value);
   bool raiseError = false;
   if(isAdcTargetValid(value)){
-    return setDeltaAdc(value - adcValue);
+    raiseError = setDeltaAdc(value - adcValue);
   }else{
     raiseError = true;
   }
@@ -297,16 +299,9 @@ void Servo::stopMotor(const char *szReason){
   // Serial.printf("%s:%4d" "\n", getName(), getAdcValue());
 }
 
-int Servo::run(void){
-  if(timeout > 0){
-    if(0 == --timeout){
-        stopMotor("TIMEOUT");
-        driving = false;
-        mode = Servo::MODE_TIME;
-    }
-  }
+void Servo::runPWM(void){
   if(driving){
-    if((pwmCounter & PWM_RATIO_MAX) < pwmRatio){
+    if((pwmCounter & PWM_RATIO_MASK) < pwmRatio){
       if(forward){
         digitalWrite(phase0Pin, 1);
       }else{
@@ -318,14 +313,26 @@ int Servo::run(void){
     }
     pwmCounter++;
   }
+}
+
+int Servo::run(void){
+  if(timeout > 0){
+    if(0 == --timeout){
+        stopMotor("TIMEOUT");
+        driving = false;
+        mode = Servo::MODE_TIME;
+    }
+  }
   if(Servo::MODE_TIME == mode){
     if(remainingTimeMs > 0){
       if(--remainingTimeMs == 0){
         stopMotor("TIME");
       }
     }
+    runPWM();
     return(remainingTimeMs);
   }else{
+    runPWM();
     updatePWMRatio();
     return(adcValue);
   }
@@ -462,10 +469,24 @@ bool Servo::getAdcValueFromSetting(SetPoint *setPoint){
   return raiseError;
 }
 
-void Servo::setPwmScale(unsigned char scale){
-  pwmScale = (unsigned int)scale;
+bool Servo::setPwmScale(unsigned char scale){
+  bool raiseError = false;
+  if(scale > 0){
+    pwmScale = (unsigned int)scale;
+  }else{
+    raiseError = true;
+    pwmScale = 1;
+  }
+  return raiseError;
 }
 
-void Servo::setTimeoutScale(unsigned char scale){
-  timeoutScale = (unsigned int)scale;
+bool Servo::setTimeoutScale(unsigned char scale){
+  bool raiseError = false;
+  if(scale > 0){
+    timeoutScale = (unsigned int)scale;
+  }else{
+    raiseError = true;
+    timeoutScale = 1;
+  }
+  return raiseError;
 }
