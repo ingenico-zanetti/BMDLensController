@@ -2,8 +2,7 @@
 
 #include "Servo.hpp"
 #include "Lens.hpp"
-
-static const char FW_VERSION[] = "BMD Lens Controller v1.0.1, built on " __DATE__ " at " __TIME__;
+#include "Version.hpp"
 
 bool handleATI(const char *szString, int length) {
   bool raiseError = false;
@@ -16,7 +15,7 @@ bool handleATI(const char *szString, int length) {
       raiseError = true;
     break;
     case 0:
-      Serial.println(FW_VERSION);
+      Serial.println(getFWVersion());
       break;
     case 1:{
         char minZoomString[8];
