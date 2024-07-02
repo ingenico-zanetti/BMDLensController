@@ -1,9 +1,5 @@
 #include "Lens.hpp"
-
-// #define __T14X5POINT5DA_D24__
-// #define __S20X6POINT4BMD_DSD__
-// #define __A17X9BMD_D24__
-#define __S19X6POINT5BMD_D4M__
+#include "GlobalConfiguration.hpp"
 
 #if defined(__S20X6POINT4BMD_DSD__)
 

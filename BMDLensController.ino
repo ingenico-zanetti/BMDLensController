@@ -5,16 +5,14 @@
 #include "AtCommandAmpersAnd.hpp"
 #include "Servo.hpp"
 #include "Lens.hpp"
-
-#define __SELF_TEST__
-#undef __SELF_TEST__
+#include "GlobalConfiguration.hpp"
 
 /*
  * PIN configuration
  */
 #define ZoomADC (PA0)  // PA0 / ADC0 / BluePill.PIN05
 #define IrisADC (PA3)  // PA3 / ADC3 / BluePill.PIN08
-#define FocusADC (PB0) // PB0 / ADC8 / BluePill.PIN13
+#define FocusADC (PB0) // PB0 / ADC8 / BluePill.PIN13 (was PB10 in HW Rev 1.0.0)
 
 #define FocusP1 (PB13)
 #define FocusP0 (PB12)
@@ -42,9 +40,15 @@ enum {
 #endif
 
 AtCommandAnalyzer analyzer;
+#ifdef __PAN_AND_TILT_SUPPORT__
+HardwareSerial panAndTiltUnit(PB11, PB10); // RX3, TX3
+#endif
 
 void setup() {
   Serial.begin(115200);
+#ifdef __PAN_AND_TILT_SUPPORT__
+  panAndTiltUnit.begin(9600);
+#endif
 
   pinMode(LED_BUILTIN, OUTPUT);
   ledStatus = HIGH;
@@ -52,7 +56,9 @@ void setup() {
   
   analogReference(AR_DEFAULT);
   analogReadResolution(12);
+#ifdef __HARDWARE_REV_1_0_SUPPORT__
   pinMode(PB10, INPUT); // Rev 1.0 HW had PB10 as FocusADC. PB10 is NOT an ADC pin, so it is strapped to PB0, a valid ADC
+#endif
 
   oldMillis = millis();
   oldQuarter = oldMillis / 250;
@@ -170,6 +176,22 @@ void loop() {
       }
     }
   }
+#ifdef __PAN_AND_TILT_SUPPORT__
+  {
+    int available = panAndTiltUnit.available();
+    if(available > 0){
+#define BUFFER_SIZE (64)
+      char buffer[BUFFER_SIZE];
+      if((unsigned int)available > sizeof(buffer)){
+        available = sizeof(buffer);
+      }
+      int lus = panAndTiltUnit.readBytes(buffer, available);
+      if(lus > 0){
+        Serial.write(buffer, lus);
+      }
+    }
+  }
+#endif
   uint32_t newSeconds = newMillis / 1000;
   if(newSeconds != oldSeconds){
     oldSeconds = newSeconds;

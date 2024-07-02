@@ -1,5 +1,23 @@
 #include <Arduino.h>
 #include "Servo.hpp"
+#include "GlobalConfiguration.hpp"
+
+#ifdef __PAN_AND_TILT_SUPPORT__
+extern HardwareSerial panAndTiltUnit;
+static bool isPanOrTiltServo(const char c){
+  if(('P' == c) || ('T' == c)){
+    return true;
+  }
+  return false;
+}
+
+static bool panOrTiltForward(const char *szString){
+  bool raiseError = false;
+  Serial.printf("%s: Received command for Pan&Tilt unit ; command=[AT%s]" "\n", __FILE_NAME__, szString);
+  panAndTiltUnit.printf("AT%s" "\r", szString);
+  return raiseError;
+}
+#endif
 
 static int countComas(const char *szString, int length){
   int count = 0;
@@ -266,6 +284,11 @@ bool handlePlus(const char *szString, int length) {
     if(servo){
       raiseError = sub(servo, axis, szString, comas);
     }
+#ifdef __PAN_AND_TILT_SUPPORT__
+    if(isPanOrTiltServo(axis)){
+      raiseError = panOrTiltForward(szString);
+    }
+#endif
   }
   // Serial.printf("%s(\"%s\")=>%d" "\n", __func__, szString, raiseError);
   return (raiseError);

@@ -1,5 +1,17 @@
 #include <Arduino.h>
 #include "Servo.hpp"
+#include "GlobalConfiguration.hpp"
+
+#ifdef __PAN_AND_TILT_SUPPORT__
+extern HardwareSerial panAndTiltUnit;
+
+static bool panOrTiltForward(const char *szString){
+  bool raiseError = false;
+  Serial.printf("%s: Received command for Pan&Tilt unit ; command=[AT%s]" "\n", __FILE_NAME__, szString);
+  panAndTiltUnit.printf("AT%s" "\r", szString);
+  return raiseError;
+}
+#endif
 
 bool handleAmpersAnd(const char *szString, int length){
   bool raiseError = false;
@@ -9,6 +21,9 @@ bool handleAmpersAnd(const char *szString, int length){
         Serial.printf("%s:[%4d .. %4d .. %4d]" "\n", zoomServo.getName(), zoomServo.getAdcMinValue(), zoomServo.getAdcValue(), zoomServo.getAdcMaxValue()); // zoomServo.print("mm"); Serial.println();
         Serial.printf("%s:[%4d .. %4d .. %4d]" "\n", irisServo.getName(), irisServo.getAdcMinValue(), irisServo.getAdcValue(), irisServo.getAdcMaxValue()); // irisServo.print(""); Serial.println();
         Serial.printf("%s:[%4d .. %4d .. %4d]" "\n", focusServo.getName(), focusServo.getAdcMinValue(), focusServo.getAdcValue(), focusServo.getAdcMaxValue()); // focusServo.print("m"); Serial.println();
+#ifdef __PAN_AND_TILT_SUPPORT__
+        panOrTiltForward(szString);
+#endif
       break;
       case 'W':
         zoomServo.storeSettingsToEEPROM();

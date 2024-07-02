@@ -3,6 +3,7 @@
 
 #include "SlidingWindow.hpp"
 #include "ServoAndLens.hpp"
+#include "GlobalConfiguration.hpp"
 
 #define PWM_RATIO_MAX (16) // MUST be 2^n !!!
 #define PWM_RATIO_MASK (PWM_RATIO_MAX - 1)
