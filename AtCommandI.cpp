@@ -4,17 +4,7 @@
 #include "Lens.hpp"
 #include "Version.hpp"
 #include "GlobalConfiguration.hpp"
-
-#ifdef __PAN_AND_TILT_SUPPORT__
-extern HardwareSerial panAndTiltUnit;
-
-static bool panOrTiltForward(const char *szString){
-  bool raiseError = false;
-  Serial.printf("%s: Received command for Pan&Tilt unit ; command=[AT%s]" "\n", __FILE_NAME__, szString);
-  panAndTiltUnit.printf("AT%s" "\r", szString);
-  return raiseError;
-}
-#endif
+#include "AtCommand.hpp"
 
 bool handleATI(const char *szString, int length) {
   bool raiseError = false;
@@ -29,7 +19,7 @@ bool handleATI(const char *szString, int length) {
     case 0:
       Serial.println(getFWVersion());
 #ifdef __PAN_AND_TILT_SUPPORT__
-      panOrTiltForward("I0");
+      analyzer.forwardConcat("I0");
 #endif
       break;
     case 1:{
@@ -47,7 +37,7 @@ bool handleATI(const char *szString, int length) {
         focusServo.setPointSettingToString(maxFocusString, focusServo.getLastSetPoint());
         Serial.printf("%s:" " Zoom in [%s..%s]mm," " Iris in [%s..%s]," " Focus in [%s..%s]m" "\n", szLensName, minZoomString, maxZoomString, minIrisString, maxIrisString, minFocusString, maxFocusString);
 #ifdef __PAN_AND_TILT_SUPPORT__
-        panOrTiltForward("I1");
+      analyzer.forwardConcat("I1");
 #endif
       }
       break;
@@ -59,7 +49,7 @@ bool handleATI(const char *szString, int length) {
         Serial.printf("%s:" "\n", irisServo.getName());
         irisServo.print("");
 #ifdef __PAN_AND_TILT_SUPPORT__
-        panOrTiltForward("I2");
+      analyzer.forwardConcat("I2");
 #endif
       break;
   }

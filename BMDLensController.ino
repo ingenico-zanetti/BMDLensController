@@ -39,7 +39,6 @@ enum {
 } selfTestState;
 #endif
 
-AtCommandAnalyzer analyzer;
 #ifdef __PAN_AND_TILT_SUPPORT__
 HardwareSerial panAndTiltUnit(PB11, PB10); // RX3, TX3
 #endif

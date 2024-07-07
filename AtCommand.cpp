@@ -1,6 +1,11 @@
 #include "AtCommand.hpp"
 #include <ctype.h>
 #include <string.h>
+#include "GlobalConfiguration.hpp"
+
+#ifdef __PAN_AND_TILT_SUPPORT__
+extern HardwareSerial panAndTiltUnit;
+#endif
 
 bool errorCallback(const char *szString, int length){
   (void)szString;
@@ -32,6 +37,26 @@ void AtCommandAnalyzer::init(uint32_t size){
   reInit();
 }
 
+#ifdef __PAN_AND_TILT_SUPPORT__
+void AtCommandAnalyzer::forwardInit(void){
+  forwardBufferOffset = 0;
+}
+
+void AtCommandAnalyzer::forwardConcat(const char *s){
+  if(forwardBufferOffset > 0){
+    forwardBuffer[forwardBufferOffset++] = ';';
+  }
+  strcpy(forwardBuffer + forwardBufferOffset, s);
+  forwardBufferOffset += strlen(s);
+}
+void AtCommandAnalyzer::forward(void){
+  if(forwardBufferOffset > 0){
+    panAndTiltUnit.printf("AT%s" "\r", forwardBuffer);
+    Serial.printf("Forwarding [%s]" "\n", forwardBuffer);
+  }
+}
+#endif
+
 void AtCommandAnalyzer::reInit(void){
   wPtr = data + maxSize;
   rPtr = wPtr;
@@ -52,7 +77,13 @@ void AtCommandAnalyzer::checkAndStrip(void){
       }
       callbackBuffer[i] = '\0';
 //      Serial.printf("callbackBuffer[]=\"%s\"" "\n", callbackBuffer);
+#ifdef __PAN_AND_TILT_SUPPORT__
+      forwardInit();
+#endif
       analyze(callbackBuffer);
+#ifdef __PAN_AND_TILT_SUPPORT__
+      forward();
+#endif
     }
   }
   reInit();
@@ -112,3 +143,5 @@ void AtCommandAnalyzer::addCallback(char c, FirstLevelCommand command){
     firstLevelCommands[index] = command;
   }
 }
+
+AtCommandAnalyzer analyzer;
