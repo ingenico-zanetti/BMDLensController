@@ -52,7 +52,7 @@ void AtCommandAnalyzer::forwardConcat(const char *s){
 void AtCommandAnalyzer::forward(void){
   if(forwardBufferOffset > 0){
     panAndTiltUnit.printf("AT%s" "\r", forwardBuffer);
-    Serial.printf("Forwarding [%s]" "\n", forwardBuffer);
+    // Serial.printf("Forwarding [%s]" "\n", forwardBuffer);
   }
 }
 #endif

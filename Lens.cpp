@@ -251,6 +251,72 @@ const ServoSettings focusSettings = {
   }
 };
 
+#elif defined(__HSS18X5POINT5BMD_D18__)
+
+const char *szLensName = "FUJINON HSs18x5.5BMD-D18";
+
+const ServoSettings zoomSettings = {
+  .setPoints = {
+    { .setting =   55, .adcValue = 3004 },
+    { .setting =  100, .adcValue = 2655 },
+    { .setting =  200, .adcValue = 2366 },
+    { .setting =  500, .adcValue = 1978 },
+    { .setting = 1000, .adcValue = 1701 },
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 4,
+    .timeoutScale = 128,
+    .minSpeed = 3,
+    .rfu = 0
+  }
+};
+
+
+const ServoSettings irisSettings = {
+  .setPoints = {
+    { .setting =  14, .adcValue = 3116},
+    { .setting =  20, .adcValue = 2820},
+    { .setting =  28, .adcValue = 2640},
+    { .setting =  40, .adcValue = 2397},
+    { .setting =  56, .adcValue = 2164},
+    { .setting =  80, .adcValue = 1948},
+    { .setting = 110, .adcValue = 1724},
+    { .setting = 160, .adcValue = 1515},
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 10,
+    .timeoutScale = 64,
+    .minSpeed = 1,
+    .rfu = 0
+  }
+};
+
+const ServoSettings focusSettings = {
+  .setPoints = {
+    { .setting =    6, .adcValue = 1173},
+    { .setting =    7, .adcValue = 1361},
+    { .setting =    8, .adcValue = 1566},
+    { .setting =    9, .adcValue = 1708},
+    { .setting =   10, .adcValue = 1834},
+    { .setting =   12, .adcValue = 1990},
+    { .setting =   15, .adcValue = 2148},
+    { .setting =   20, .adcValue = 2310},
+    { .setting =   30, .adcValue = 2463},
+    { .setting =   50, .adcValue = 2594},
+    { .setting = 9990, .adcValue = 2757}, // infinity
+    { .setting = 9999, .adcValue = 2813}, // and beyond
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 6,
+    .timeoutScale = 128,
+    .minSpeed = 2,
+    .rfu = 0
+  }
+};
+
 #else
 #error "No Lens Selected !"
 #endif
