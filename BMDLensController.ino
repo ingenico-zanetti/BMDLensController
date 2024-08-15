@@ -134,7 +134,7 @@ void setup() {
   focusServo.setMode(Servo::MODE_TIME);
   zoomServo.setMode(Servo::MODE_TIME);
   irisServo.setMode(Servo::MODE_TIME);
-
+#if 0
   focusServo.setPwmRatioMin(focusSettings.parameters.minSpeed);
   focusServo.setPwmScale(focusSettings.parameters.pwmScale);
   focusServo.setTimeoutScale(focusSettings.parameters.timeoutScale);
@@ -146,7 +146,7 @@ void setup() {
   irisServo.setPwmRatioMin(irisSettings.parameters.minSpeed);
   irisServo.setPwmScale(irisSettings.parameters.pwmScale);
   irisServo.setTimeoutScale(irisSettings.parameters.timeoutScale);
-  
+#endif
  
 #ifdef __SELF_TEST__
   selfTestState = SELF_TEST_STATE_PENDING;
