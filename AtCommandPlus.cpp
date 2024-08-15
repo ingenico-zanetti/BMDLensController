@@ -66,7 +66,7 @@ static bool plusRead(Servo *servo, const char c, const char *szString, int comas
  * AT+X={+|-}dddM   => move X axis for ddd milliseconds, backward or forward
  * AT+F=+40m
  * AT+F=-100m
- * All the above syntaxes allow for an optional parameter, the maximum speed, in the range [1..15].
+ * All the above syntaxes allow for an optional parameter, the maximum speed, in the range [1..16].
  * The speed setting will remaing active until changed
  * Notice, however, that some axis might not support the lowest speeds, but don't report any error in that case.
  * Example:
