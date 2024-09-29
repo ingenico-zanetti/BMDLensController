@@ -1,7 +1,69 @@
 #include "Lens.hpp"
 #include "GlobalConfiguration.hpp"
 
-#if defined(__S20X6POINT4BMD_DSD__)
+#if defined(__A10X4POINT8BEVM_G28__)
+// Actually, a BEVM retrofitted with a FUJINON EAGLE II A16x9.5BMD-D18
+// motor unit to get a BMD lens
+const char *szLensName = "FUJINON A10x4.8BEVM-G28";
+
+const ServoSettings zoomSettings = {
+  .setPoints = {
+    { .setting =   48, .adcValue = 3030 },
+    { .setting =  100, .adcValue = 2560 },
+    { .setting =  200, .adcValue = 2280 },
+    { .setting =  300, .adcValue = 2010 },
+    { .setting =  480, .adcValue = 1725 },
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 4,
+    .timeoutScale = 100,
+    .minSpeed = 1,
+    .rfu = 0
+  }
+};
+
+
+const ServoSettings irisSettings = {
+  .setPoints = {
+    { .setting =  18, .adcValue = 2985},
+    { .setting =  28, .adcValue = 2490},
+    { .setting =  40, .adcValue = 2265},
+    { .setting =  56, .adcValue = 2070},
+    { .setting =  80, .adcValue = 1872},
+    { .setting = 110, .adcValue = 1665},
+    { .setting = 160, .adcValue = 1438},
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 10,
+    .timeoutScale = 32,
+    .minSpeed = 4,
+    .rfu = 0
+  }
+};
+
+const ServoSettings focusSettings = {
+  .setPoints = {
+    { .setting =    3, .adcValue = 1293},
+    { .setting =    4, .adcValue = 1666},
+    { .setting =    6, .adcValue = 1905},
+    { .setting =   10, .adcValue = 2140},
+    { .setting =   15, .adcValue = 2375},
+    { .setting =   30, .adcValue = 2566},
+    { .setting = 9990, .adcValue = 2852}, // infinity
+    { .setting = 9999, .adcValue = 2880}, // and beyond
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 6,
+    .timeoutScale = 64,
+    .minSpeed = 4,
+    .rfu = 0
+  }
+};
+
+#elif defined(__S20X6POINT4BMD_DSD__)
 
 const char *szLensName = "FUJINON S20x6.4BMD-DSD";
 
