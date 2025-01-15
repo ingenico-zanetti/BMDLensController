@@ -179,10 +179,17 @@ const char *Servo::getName(void){
 }
 
 int Servo::setMode(int newMode){
-  if(MODE_TIME == newMode){
-    mode = MODE_TIME;
-  }else{
-    mode = MODE_ADC;
+  switch(newMode){
+    case MODE_ADC:
+      mode = MODE_ADC;
+      break;
+    case MODE_TIMED_MOVE:
+      mode = MODE_TIMED_MOVE;
+    break;
+    default:
+    case MODE_DURATION:
+      mode = MODE_DURATION;
+    break;
   }
   return mode;
 }
@@ -202,7 +209,7 @@ bool Servo::getDirection(void){
 bool Servo::setTimeMs(int t){
   bool raiseError = true;
   if(t > 0){
-    mode = MODE_TIME;
+    mode = MODE_DURATION;
     remainingTimeMs = t + 1;
     pwmRatio = pwmRatioMax;
     pwmCounter = 0;
@@ -287,6 +294,39 @@ bool Servo::setTargetAdcValue(int value){
   return raiseError;
 }
 
+/**
+ * This is always called after a valid call to setTargetAdcValue() or setDeltaAdc(),
+ * so targetAdcValue is our aim. Once its value is copied into timed_move_context.stopADC,
+ * we need to set targetAdcValue to the current ADC value to start the process.
+ * Successive calls to run() will update targetAdcValue, then the calls to runPWM() and updatePWMRatio()
+ * should do their job just as if we were in MODE_ADC, except with a moving targetAdcValue
+ */
+bool Servo::timedMoveInit(uint32_t milliseconds){
+  // Serial.printf("%s::%s(%dms)" "\n", szName, __func__, milliseconds);
+  mode = MODE_TIMED_MOVE;
+  if(targetAdcValue == adcValue){
+    timed_move_context.complete = true;
+  }else{
+    timed_move_context.complete = false;
+    timed_move_context.startADC = adcValue;
+    timed_move_context.stopADC = targetAdcValue;
+    timed_move_context.msIncrement = milliseconds;
+    if (adcValue > targetAdcValue) {
+      timed_move_context.adcIncrement = (adcValue - targetAdcValue);
+      timed_move_context.targetADCIncrement = -1;
+      forward = true;
+    }
+    else {
+      timed_move_context.adcIncrement = (targetAdcValue - adcValue);
+      timed_move_context.targetADCIncrement = +1;
+      forward = false;
+    }
+    timed_move_context.targetADC = (int32_t)adcValue;
+    targetAdcValue = adcValue;
+  }
+  return(timed_move_context.complete);
+}
+
 void Servo::stopMotor(const char *szReason){
   (void)szReason;
   // Serial.printf("Stop motor %s on %s" "\n", szName, szReason);
@@ -316,25 +356,48 @@ void Servo::runPWM(void){
 }
 
 int Servo::run(void){
-  if(timeout > 0){
-    if(0 == --timeout){
-        stopMotor("TIMEOUT");
-        driving = false;
-        mode = Servo::MODE_TIME;
-    }
-  }
-  if(Servo::MODE_TIME == mode){
-    if(remainingTimeMs > 0){
-      if(--remainingTimeMs == 0){
-        stopMotor("TIME");
+  if(Servo::MODE_TIMED_MOVE == mode){
+    if (false == timed_move_context.complete) {
+      timed_move_context.decision += timed_move_context.adcIncrement;
+      while (timed_move_context.decision >= timed_move_context.msIncrement) {
+        timed_move_context.decision -= timed_move_context.msIncrement;
+        timed_move_context.targetADC += timed_move_context.targetADCIncrement;
+      }
+      if (timed_move_context.targetADC == (int32_t)timed_move_context.stopADC) {
+        timed_move_context.complete = true;
+        stopMotor("TIMED_MOVE complete");
+        // Create an absolute move to the requested position
+        // This helps with precision of stop
+        // and with unrealistic timings
+        setTargetAdcValue(timed_move_context.stopADC);
+      }else{
+        targetAdcValue = timed_move_context.targetADC;
+        runPWM();
+        updatePWMRatio();
       }
     }
-    runPWM();
-    return(remainingTimeMs);
+    return(timed_move_context.complete);
   }else{
-    runPWM();
-    updatePWMRatio();
-    return(adcValue);
+    if(timeout > 0){
+      if(0 == --timeout){
+          stopMotor("TIMEOUT");
+          driving = false;
+          mode = Servo::MODE_DURATION;
+      }
+    }
+    if(Servo::MODE_DURATION == mode){
+      if(remainingTimeMs > 0){
+        if(--remainingTimeMs == 0){
+          stopMotor("TIME");
+        }
+      }
+      runPWM();
+      return(remainingTimeMs);
+    }else{
+      runPWM();
+      updatePWMRatio();
+      return(adcValue);
+    }
   }
 }
 

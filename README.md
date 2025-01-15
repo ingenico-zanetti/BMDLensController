@@ -189,7 +189,7 @@ AT+Z=2000;+I=2000;+F=2000
 OK
 ```
 
-will move every servo, simultaneously, to reach the ADC value of 2000 ; each servo runs at each own pace, so the movements will not complete at the same time.
+will move every servo, simultaneously, to reach the ADC value of 2000 ; each servo runs at its own pace, so the movements will not complete at the same time.
 
 
 Examples of relative ADC move:
@@ -204,9 +204,17 @@ will change the position of the focus to reach current ADC + 20
 
 AT+F=+1000;+Z=+60,1
 
-will massively change focus at the current speeed while also changing the zoom, at the slowest speed possible, by a small value.
+will massively change focus at the current speed while also changing the zoom, at the slowest speed possible, by a small value.
 
-For absolute as well as relative moves, the boundaries are check: no move is allowed to end outside of the known setpoints for this servo.
+For absolute as well as relative moves, the boundaries are checked: no move is allowed to end outside of the known setpoints for this servo.
+
+v3.0.1 introduces a new syntax for speed parameter: this is called timed moves. By adding an 's' after what was the PWM setting, it becomes the time the move should complete in.
+The value is a float, and the timing can be precise down to millisecond, but don't expected miracle on small move or don't expect highly accurate timings.
+Nonetheless, this allows for synchronized moves: 
+
+AT+Z=48.,2.3s;+F=10.,2.3s
+
+will reach 48mm zoom and 10m focus at the same time, in about 2.3s.
 
 
 The setpoint syntax has a dot '.' in the value (so 4 should be written 4. else it will be considered as an absolute ADC setting)
@@ -260,7 +268,7 @@ OK
 but do not expect to reach the actual 20mm focal (ADC value are related to angular motion, not actual settings)
 
 As part of a calibration process, you can set a new ADC value for any setpoint. The setpoint must exists, though.
-Trying to set an ADC value for a non-existing setpoint result in an error.
+Trying to set an ADC value for a non-existing setpoint results in an error.
 You do that by either specifying the new value, of request using the current value:
 
 ```text

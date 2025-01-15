@@ -73,7 +73,21 @@ static bool plusRead(Servo *servo, const char c, const char *szString, int comas
  * AT+Z=-100m,1     => will move zoom at the slowest possible speed
  * This optional parameter can also be used without specifying any move:
  * AT+Z=,3          => change the speed for future moves, but don't move
- * 
+ *
+ * Starting with v3.0.1, a new syntax for the speed allows to use it at a move duration request.
+ * This is obtained be adding 's' after the speed definition ; this second parameter turns into a duration.
+ * The duration, in second as the unit implies, is parsed as a floating point number.
+ * This new mode is called TIMED MOVE (old TIME MOVE is renamed DURATION MOVE, a more precise terminology)
+ * The servo will try to reach the requested position in the given time, respecting the maximum speed.
+ * This is done through running a "classical" MODE_ADC equivalent, but with a moving targetAdcValue.
+ * If the duration is unrealistic, the move will not be complete, so an absolute move to the target ADC is automatically inserted after a timed move.
+ * This syntax also allows synchronized moves (if requested durations are realistic, of course).
+ * For example:
+ *
+ * AT+Z=48.,2.3s;+F=10.,2.3s
+ *
+ * should reach 48mm zoom and 10m focus at the same time, in about 2.3s.
+ *
  * Programming syntax for SetPoints
  * AT+X=ddd.d,,
  * AT+X=ddd.d,,dddd
@@ -113,6 +127,9 @@ static bool plusWrite(Servo *servo, const char c, const char *szString, int coma
   (void)c;
   bool raiseError = false;
   if(NULL != servo){
+    float secondValue = 0.0f;
+    bool hasSecondValue = false;
+
     char first = szString[3];
     if('R' == first){
       servo->resetMinMax();
@@ -159,7 +176,7 @@ static bool plusWrite(Servo *servo, const char c, const char *szString, int coma
       SetPoint setPoint = {0, 0};
       if(hasFirstValue){
         if('M' == *end){
-          mode = Servo::MODE_TIME;
+          mode = Servo::MODE_DURATION;
         }else{
           int l = (end - nptr);
           const char *dot = (const char *)memchr(nptr, '.', l);
@@ -182,8 +199,6 @@ static bool plusWrite(Servo *servo, const char c, const char *szString, int coma
         }
       }
       if(!raiseError){
-        float secondValue = 0.0f;
-        bool hasSecondValue = false;
         if(comas >= 1){
           char *p = strchr(szString + offset, ',');
           nptr = p + 1;
@@ -191,11 +206,16 @@ static bool plusWrite(Servo *servo, const char c, const char *szString, int coma
           hasSecondValue = (end != nptr);
         }
         if(hasSecondValue){
-          unsigned int max = (unsigned int)secondValue;
-          if((0 < max) && (max <= PWM_RATIO_MAX)){
-            servo->setPwmRatioMax(max);
+          if('S' == *end){
+            // v3.0.1+: TIMED MOVE
+            mode = Servo::MODE_TIMED_MOVE;
           }else{
-            raiseError = true;
+            unsigned int max = (unsigned int)secondValue;
+            if((0 < max) && (max <= PWM_RATIO_MAX)){
+              servo->setPwmRatioMax(max);
+            }else{
+              raiseError = true;
+            }
           }
         }
       }
@@ -221,9 +241,9 @@ static bool plusWrite(Servo *servo, const char c, const char *szString, int coma
       }else{
         if(!raiseError && hasFirstValue){
           if(sign != 0){
-            if(Servo::MODE_TIME == mode){
+            if(Servo::MODE_DURATION == mode){
               int ms = (int)firstValue;
-              // Serial.printf("%s(%s): timed move for %s: %d ms" "\n", __func__, szString, servo->getName(), ms);
+              // Serial.printf("%s(%s): duration move for %s: %d ms" "\n", __func__, szString, servo->getName(), ms);
               servo->setDirection(sign == +1);
               raiseError = servo->setTimeMs(ms);
             }else{
@@ -240,6 +260,10 @@ static bool plusWrite(Servo *servo, const char c, const char *szString, int coma
               // Serial.printf("%s(%s): absolute ADC mode for %s: %d" "\n", __func__, szString, servo->getName(), position);
               raiseError = servo->setTargetAdcValue(position);
             }
+          }
+          if(!raiseError && Servo::MODE_TIMED_MOVE == mode){
+            uint32_t duration = (uint32_t)(secondValue* 1000.0f);
+            servo->timedMoveInit(duration);
           }
         }
       }
