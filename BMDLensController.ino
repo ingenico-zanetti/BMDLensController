@@ -81,6 +81,7 @@ void SystemClock_Config(void)
 int ledStatus;
 uint32_t oldSeconds;
 uint32_t oldMillis;
+uint32_t oldMicros;
 uint32_t oldQuarter;
 
 bool powerPresent;
@@ -120,6 +121,7 @@ void setup() {
 #endif
 
   oldMillis = millis();
+  oldMicros = micros();
   oldQuarter = oldMillis / 250;
   oldSeconds = oldMillis / 1000;
   analyzer.addCallback('I', handleATI);
@@ -131,9 +133,9 @@ void setup() {
   zoomServo.setPins(ZoomADC, ZoomP1, ZoomP0);
   irisServo.setPins(IrisADC, IrisP0, IrisP1);
 
-  focusServo.setMode(Servo::MODE_TIME);
-  zoomServo.setMode(Servo::MODE_TIME);
-  irisServo.setMode(Servo::MODE_TIME);
+  focusServo.setMode(Servo::MODE_DURATION);
+  zoomServo.setMode(Servo::MODE_DURATION);
+  irisServo.setMode(Servo::MODE_DURATION);
  
 #ifdef __SELF_TEST__
   selfTestState = SELF_TEST_STATE_PENDING;
@@ -157,19 +159,33 @@ static void storeSelfTestBackwardResult(Servo *servo){
 }
 #endif
 
+#define __RUN_MILLIS__
 void loop() {
   focusServo.readAdc();
   zoomServo.readAdc();
   irisServo.readAdc();
+  bool runServos = false;
+  uint32_t newMicros = micros();
+  uint32_t deltaMicro = newMicros - oldMicros;
+  if(deltaMicro > 50){
+#ifndef __RUN_MILLIS__
+      runServos = true;
+#endif
+  }
   uint32_t newMillis = millis();
   if(newMillis != oldMillis){
     oldMillis = newMillis;
     powerPresent = (zoomServo.getAdcValue() > 1100);
     if(powerPresent){
-      focusServo.run();
-      zoomServo.run();
-      irisServo.run();
+#ifdef __RUN_MILLIS__
+      runServos = true;
+#endif
     }
+  }
+  if(runServos){
+    focusServo.run();
+    zoomServo.run();
+    irisServo.run();
   }
 #ifdef __SELF_TEST__
   if(selfTestState > SELF_TEST_STATE_DONE){

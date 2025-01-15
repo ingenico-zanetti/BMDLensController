@@ -9,6 +9,7 @@
 // #define __A17X9BMD_D24__
 // #define __S19X6POINT5BMD_D4M__
 #define __HSS18X5POINT5BMD_D18__
+// #define __A10X4DOT8BMD_G28__
 
 #define __PAN_AND_TILT_SUPPORT__ (1)
 

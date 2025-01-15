@@ -44,9 +44,22 @@ class Servo {
     const ServoSettings *servoSettingsFromFW;
     void loadSettingsFromMemory(const ServoSettings *settings);
 
+    struct {
+      uint32_t startADC;           // where we started from
+      uint32_t stopADC;            // ADC position we aim for
+      uint32_t msIncrement;        // time increment for decision
+      uint32_t adcIncrement;       // adc increment for decision ; also the absolute value of (stopADC - startADC)
+      uint32_t decision;           // use to update targetADC based on msIncrement and adcIncrement
+      int32_t  targetADC;          // where we would like to be
+      int32_t  targetADCIncrement; // +1/-1
+      bool     complete;
+    } timed_move_context;
+
   public:
-    static const int MODE_TIME = 0;
-    static const int MODE_ADC = 1;
+    static const int MODE_DURATION = 0;   // run at requested PWM setting for the giving time
+    static const int MODE_ADC = 1;        // try to reach the request ADC setting at requested PWM setting before timeout
+    static const int MODE_TIMED_MOVE = 2; // reach ADC setting within the requested time
+
     Servo(const ServoSettings *s, const char *name, unsigned int offset);
     void print(const char *szUnit);
     
@@ -77,6 +90,7 @@ class Servo {
 
     bool setDeltaAdc(int t);
     bool setTargetAdcValue(int i);
+    bool timedMoveInit(uint32_t milliseconds);
 
     int run(void);
 

@@ -317,6 +317,67 @@ const ServoSettings focusSettings = {
   }
 };
 
+#elif defined(__A10X4DOT8BMD_G28__)
+
+const char *szLensName = "FUJINON A10x4.8BEMD-G28"; // Actually an A10x4.8BEVM-G28 retrofitted with the BMD from an A16x9.5BMD-D8
+
+const ServoSettings zoomSettings = {
+  .setPoints = {
+    { .setting =  48, .adcValue = 3004 },
+    { .setting = 100, .adcValue = 2655 },
+    { .setting = 200, .adcValue = 2366 },
+    { .setting = 300, .adcValue = 1978 },
+    { .setting = 480, .adcValue = 1701 },
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 4,
+    .timeoutScale = 128,
+    .minSpeed = 3,
+    .rfu = 0
+  }
+};
+
+
+const ServoSettings irisSettings = {
+  .setPoints = {
+    { .setting =  18, .adcValue = 3116},
+    { .setting =  28, .adcValue = 2640},
+    { .setting =  40, .adcValue = 2397},
+    { .setting =  56, .adcValue = 2164},
+    { .setting =  80, .adcValue = 1948},
+    { .setting = 110, .adcValue = 1724},
+    { .setting = 160, .adcValue = 1515},
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 10,
+    .timeoutScale = 64,
+    .minSpeed = 1,
+    .rfu = 0
+  }
+};
+
+const ServoSettings focusSettings = {
+  .setPoints = {
+    { .setting =    3, .adcValue = 1173},
+    { .setting =    4, .adcValue = 1361},
+    { .setting =    6, .adcValue = 1566},
+    { .setting =   10, .adcValue = 1834},
+    { .setting =   15, .adcValue = 2148},
+    { .setting =   30, .adcValue = 2463},
+    { .setting = 9990, .adcValue = 2757}, // infinity
+    { .setting = 9999, .adcValue = 2813}, // and beyond
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 6,
+    .timeoutScale = 128,
+    .minSpeed = 2,
+    .rfu = 0
+  }
+};
+
 #else
 #error "No Lens Selected !"
 #endif
