@@ -132,6 +132,7 @@ The "move" command is highly polymorphic ; there is 3 main ways of specifying a 
 - time and direction
 - ADC value to reach, both relative and absolute
 - setpoint
+  
 Each move command allow to specify the "speed" for the move (and the moves afterwards). You can even specify the speed without moving
 
 Examples of "time and direction":
