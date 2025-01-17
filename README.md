@@ -208,15 +208,6 @@ will massively change focus at the current speed while also changing the zoom, a
 
 For absolute as well as relative moves, the boundaries are checked: no move is allowed to end outside of the known setpoints for this servo.
 
-v3.0.1 introduces a new syntax for speed parameter: this is called timed moves. By adding an 's' after what was the PWM setting, it becomes the time the move should complete in.
-The value is a float, and the timing can be precise down to millisecond, but don't expected miracle on small move or don't expect highly accurate timings.
-Nonetheless, this allows for synchronized moves: 
-
-AT+Z=48.,2.3s;+F=10.,2.3s
-
-will reach 48mm zoom and 10m focus at the same time, in about 2.3s.
-
-
 The setpoint syntax has a dot '.' in the value (so 4 should be written 4. else it will be considered as an absolute ADC setting)
 Examples of "setpoint" syntax
 
@@ -266,6 +257,14 @@ OK
 ```
 
 but do not expect to reach the actual 20mm focal (ADC value are related to angular motion, not actual settings)
+
+v3.0.1 introduces a new syntax for speed parameter: this is called timed moves. By adding an 's' after what was the PWM setting, it becomes the time the move should complete in.
+The value is a float, and the timing can be precise down to millisecond, but don't expected miracle on small move or don't expect highly accurate timings.
+Nonetheless, this allows for synchronized moves: 
+
+AT+Z=48.,2.3s;+F=10.,2.3s
+
+will reach 48mm zoom and 10m focus at the same time, in about 2.3s.
 
 As part of a calibration process, you can set a new ADC value for any setpoint. The setpoint must exists, though.
 Trying to set an ADC value for a non-existing setpoint results in an error.
@@ -322,8 +321,8 @@ OK
 
 will forbid Zoom servo to get lower than 3/16 PWM setting.
 
-"timeoutScale" is used as a protection mechanism. At each move request, a timeout is computed. For the timed moves, this is the provided time. For other move this boils down to delta ADC divided by speed.
-When you ask for a new position, the FW will use the difference between the current ADC value and the ADC value to reach (apart from timed move, all moves are actually programmed as ADC value to reach).
+"timeoutScale" is used as a protection mechanism. At each move request, a timeout is computed. For the "duration" moves, this is the provided duration. For other move this boils down to delta ADC divided by speed.
+When you ask for a new position, the FW will use the difference between the current ADC value and the ADC value to reach (apart from "duration" move, all moves are actually programmed as ADC values to reach).
 This difference in ADC steps is multiplied by the provided timeoutScale and divided by the PWM setting applied at the start of the move (between 1 and 16, depending on the speed setting and the gap between the current position and the position to reach). The timeout value is in millisecond. Provided values range from 32 for iris to 100 for zoom. This is tradeoff: too low, the servo might stop before reaching the requested position, too high the servo might be "buzzing" for a while after reaching the requested position. Examples: a 1000-ADC step move with a 100 timeoutScale at full speed will have (1000 * 100) / 16 = 6250ms to complete ; a 1000-ADC step move with 100 as timeoutScale and the lowest speed will have (100*1000) / 1 = 100s to complete.
 This pwmScale parameter is used to mimic the analog behavior of the original servo drive board: the closer to the target point we are, the slower we go (else we might overshoot and oscillate around the desired point).
 Each time the FW "runs" a servo (every milliseconds) it compute the difference between the current ADC value and the target ADC value, this difference is then divided by pwmScale to get a PWM setting to apply (from 1 to 16).
