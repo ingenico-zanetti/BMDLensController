@@ -1,18 +1,17 @@
 #include "Lens.hpp"
 #include "GlobalConfiguration.hpp"
 
-#if defined(__A10X4POINT8BEVM_G28__)
-// Actually, a BEVM retrofitted with a FUJINON EAGLE II A16x9.5BMD-D18
-// motor unit to get a BMD lens
-const char *szLensName = "FUJINON A10x4.8BEVM-G28";
+#if defined(__HA18x7POINT6BEMD_M1B__)
+// Actually, an HA18x7.6BERM-M1B retrofitted with a BMD unit from another Fujinon BMD lens
+const char *szLensName = "FUJINON HA18x7.6BEMD-M1B";
 
 const ServoSettings zoomSettings = {
   .setPoints = {
-    { .setting =   48, .adcValue = 3030 },
-    { .setting =  100, .adcValue = 2560 },
-    { .setting =  200, .adcValue = 2280 },
-    { .setting =  300, .adcValue = 2010 },
-    { .setting =  480, .adcValue = 1725 },
+    { .setting =   76, .adcValue = 3030 },
+    { .setting =  150, .adcValue = 2560 },
+    { .setting =  300, .adcValue = 2280 },
+    { .setting =  600, .adcValue = 2100 },
+    { .setting = 1370, .adcValue = 1725 },
     { 0, 0}
   },
   .parameters = {
@@ -45,12 +44,16 @@ const ServoSettings irisSettings = {
 
 const ServoSettings focusSettings = {
   .setPoints = {
-    { .setting =    3, .adcValue = 1293},
-    { .setting =    4, .adcValue = 1666},
-    { .setting =    6, .adcValue = 1905},
+    { .setting =    6, .adcValue = 1293},
+    { .setting =    7, .adcValue = 1666},
+    { .setting =    8, .adcValue = 1905},
+    { .setting =    9, .adcValue = 2005},
     { .setting =   10, .adcValue = 2140},
+    { .setting =   12, .adcValue = 2275},
     { .setting =   15, .adcValue = 2375},
     { .setting =   30, .adcValue = 2566},
+    { .setting =   50, .adcValue = 2666},
+    { .setting =  100, .adcValue = 2766}, // actually 30 feet
     { .setting = 9990, .adcValue = 2852}, // infinity
     { .setting = 9999, .adcValue = 2880}, // and beyond
     { 0, 0}
@@ -379,7 +382,7 @@ const ServoSettings focusSettings = {
   }
 };
 
-#elif defined(__A10X4DOT8BMD_G28__)
+#elif defined(__A10X4POINT8BEMD_G28__)
 
 const char *szLensName = "FUJINON A10x4.8BEMD-G28"; // Actually an A10x4.8BEVM-G28 retrofitted with the BMD from an A16x9.5BMD-D8
 
