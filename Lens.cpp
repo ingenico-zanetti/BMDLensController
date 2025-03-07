@@ -7,11 +7,11 @@ const char *szLensName = "FUJINON HA18x7.6BEMD-M1B";
 
 const ServoSettings zoomSettings = {
   .setPoints = {
-    { .setting =   76, .adcValue = 3030 },
-    { .setting =  150, .adcValue = 2560 },
-    { .setting =  300, .adcValue = 2280 },
-    { .setting =  600, .adcValue = 2100 },
-    { .setting = 1370, .adcValue = 1725 },
+    { .setting =   76, .adcValue = 2997 },
+    { .setting =  150, .adcValue = 2619 },
+    { .setting =  300, .adcValue = 2332 },
+    { .setting =  600, .adcValue = 2049 },
+    { .setting = 1370, .adcValue = 1708 },
     { 0, 0}
   },
   .parameters = {
@@ -25,13 +25,13 @@ const ServoSettings zoomSettings = {
 
 const ServoSettings irisSettings = {
   .setPoints = {
-    { .setting =  18, .adcValue = 2985},
-    { .setting =  28, .adcValue = 2490},
-    { .setting =  40, .adcValue = 2265},
-    { .setting =  56, .adcValue = 2070},
-    { .setting =  80, .adcValue = 1872},
-    { .setting = 110, .adcValue = 1665},
-    { .setting = 160, .adcValue = 1438},
+    { .setting =  18, .adcValue = 2906},
+    { .setting =  28, .adcValue = 2595},
+    { .setting =  40, .adcValue = 2291},
+    { .setting =  56, .adcValue = 2052},
+    { .setting =  80, .adcValue = 1823},
+    { .setting = 110, .adcValue = 1611},
+    { .setting = 160, .adcValue = 1424},
     { 0, 0}
   },
   .parameters = {
@@ -44,18 +44,19 @@ const ServoSettings irisSettings = {
 
 const ServoSettings focusSettings = {
   .setPoints = {
-    { .setting =    6, .adcValue = 1293},
-    { .setting =    7, .adcValue = 1666},
-    { .setting =    8, .adcValue = 1905},
-    { .setting =    9, .adcValue = 2005},
-    { .setting =   10, .adcValue = 2140},
-    { .setting =   12, .adcValue = 2275},
-    { .setting =   15, .adcValue = 2375},
-    { .setting =   30, .adcValue = 2566},
-    { .setting =   50, .adcValue = 2666},
-    { .setting =  100, .adcValue = 2766}, // actually 30 feet
-    { .setting = 9990, .adcValue = 2852}, // infinity
-    { .setting = 9999, .adcValue = 2880}, // and beyond
+    { .setting =    6, .adcValue = 1202},
+    { .setting =    7, .adcValue = 1377},
+    { .setting =    8, .adcValue = 1572},
+    { .setting =    9, .adcValue = 1717},
+    { .setting =   10, .adcValue = 1852},
+    { .setting =   12, .adcValue = 1997},
+    { .setting =   15, .adcValue = 2156},
+    { .setting =   20, .adcValue = 2314},
+    { .setting =   30, .adcValue = 2494},
+    { .setting =   50, .adcValue = 2623},
+    { .setting =  100, .adcValue = 2713}, // actually 30 feet
+    { .setting = 9990, .adcValue = 2829}, // infinity
+    { .setting = 9999, .adcValue = 2863}, // and beyond
     { 0, 0}
   },
   .parameters = {
