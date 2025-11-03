@@ -1,7 +1,71 @@
 #include "Lens.hpp"
 #include "GlobalConfiguration.hpp"
 
-#if defined(__HA18x7POINT6BEMD_M1B__)
+#if defined(__HA18X5POINT5BEMD_M6__)
+// Actually, an HA18x5.5BERM-M6 retrofitted with a BMD unit from another Fujinon BMD lens
+
+const char *szLensName = "FUJINON HA18x5.5BEMD-M6";
+
+const ServoSettings zoomSettings = {
+  .setPoints = {
+    { .setting =   55, .adcValue = 2927 },
+    { .setting =  100, .adcValue = 2590 },
+    { .setting =  200, .adcValue = 2225 },
+    { .setting =  500, .adcValue = 1806 },
+    { .setting = 1000, .adcValue = 1484 },
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 4,
+    .timeoutScale = 128,
+    .minSpeed = 3,
+    .rfu = 0
+  }
+};
+
+
+const ServoSettings irisSettings = {
+  .setPoints = {
+    { .setting =  18, .adcValue = 2842},
+    { .setting =  28, .adcValue = 2631},
+    { .setting =  40, .adcValue = 2396},
+    { .setting =  56, .adcValue = 2179},
+    { .setting =  80, .adcValue = 1960},
+    { .setting = 110, .adcValue = 1736},
+    { .setting = 160, .adcValue = 1532},
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 10,
+    .timeoutScale = 64,
+    .minSpeed = 1,
+    .rfu = 0
+  }
+};
+
+const ServoSettings focusSettings = {
+  .setPoints = {
+    { .setting =    4, .adcValue = 1143},
+    { .setting =    5, .adcValue = 1432},
+    { .setting =    6, .adcValue = 1639},
+    { .setting =    8, .adcValue = 1877},
+    { .setting =   10, .adcValue = 2024},
+    { .setting =   20, .adcValue = 2328},
+    { .setting =   50, .adcValue = 2541},
+    { .setting = 9990, .adcValue = 2692}, // infinity
+    { .setting = 9999, .adcValue = 2815}, // and beyond
+    { 0, 0}
+  },
+  .parameters = {
+    .pwmScale = 6,
+    .timeoutScale = 128,
+    .minSpeed = 2,
+    .rfu = 0
+  }
+};
+
+
+#elif defined(__HA18x7POINT6BEMD_M1B__)
 // Actually, an HA18x7.6BERM-M1B retrofitted with a BMD unit from another Fujinon BMD lens
 const char *szLensName = "FUJINON HA18x7.6BEMD-M1B";
 
